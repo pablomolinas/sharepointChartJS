@@ -10,3 +10,9 @@ export interface IChartData {
   labels: string [];
   datasets: any [];
 }
+
+interface IDataset {
+  label: string;
+  data: number;
+  backgroundColor: string;
+}

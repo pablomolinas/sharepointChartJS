@@ -12,6 +12,8 @@ import * as strings from 'ChartExampleWebPartStrings';
 import ChartExample from './components/ChartExample';
 import { IChartExampleProps, IChartData } from './components/IChartExampleProps';
 import { faker } from '@faker-js/faker';
+import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
+import { IWorkStatusItem } from '../../models/IWorkStatusItem';
 
 export interface IChartExampleWebPartProps {
   description: string;
@@ -31,38 +33,52 @@ export default class ChartExampleWebPart extends BaseClientSideWebPart<IChartExa
 
   public render(): void {
     
-    const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+    this._getListItems()
+      .then(response => {
+      
+        const data: IChartData = {
+          labels: [],
+          datasets: []
+        };
+        
+        data.datasets.push({			
+          label: "Estado de trabajos",
+          data: response.map(item => item.PercentComplete),
+          backgroundColor: response.map(item => `#${Math.floor(Math.random()*16777215).toString(16)}`),
+        }); //'rgba(255, 99, 132, 0.5)'
+		    data.labels = response.map(item => item.Title);
 
-    const data: IChartData = {
-      labels,
-      datasets: [
-        {
-          label: 'Dataset 1',
-          data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
-          backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        },
-        {
-          label: 'Dataset 2',
-          data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
-          backgroundColor: 'rgba(53, 162, 235, 0.5)',
-        },
-      ],
-    };  
-    
-    
-    const element: React.ReactElement<IChartExampleProps> = React.createElement(
-      ChartExample,
-      {
-        chartData: data,
-        isDarkTheme: this._isDarkTheme,
-        environmentMessage: this._environmentMessage,
-        hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
-      }
-    );
 
-    ReactDom.render(element, this.domElement);
+        const element: React.ReactElement<IChartExampleProps> = React.createElement(
+          ChartExample,
+          {
+            chartData: data,
+            isDarkTheme: this._isDarkTheme,
+            environmentMessage: this._environmentMessage,
+            hasTeamsContext: !!this.context.sdks.microsoftTeams,
+            userDisplayName: this.context.pageContext.user.displayName
+          }
+        );
+
+        ReactDom.render(element, this.domElement);
+        
+      });
+
   }
+
+  private _getListItems(): Promise<IWorkStatusItem[]> { 
+    const endpoint: string = this.context.pageContext.web.absoluteUrl
+    + `/_api/web/lists/getbytitle('Work Status')/items?$select=Id,Title, PercentComplete`;
+    
+    return this.context.spHttpClient.get(endpoint, SPHttpClient.configurations.v1)
+      .then(response => {
+        return response.json();
+      })
+      .then(jsonResponse => {                
+        return jsonResponse.value;
+      }) as Promise<IWorkStatusItem[]>;
+  }
+
 
   private _getEnvironmentMessage(): string {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams
