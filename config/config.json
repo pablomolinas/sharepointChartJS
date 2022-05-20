@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "chart-example-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/chartExample/ChartExampleWebPart.js",
+          "manifest": "./src/webparts/chartExample/ChartExampleWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "ChartExampleWebPartStrings": "lib/webparts/chartExample/loc/{locale}.js"
+  }
+}

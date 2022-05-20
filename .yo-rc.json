@@ -1,0 +1,16 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "version": "1.14.0",
+    "libraryName": "chart-example",
+    "libraryId": "0adb684c-6959-4b73-afc8-eca9b2d469af",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "ChartExample",
+    "solutionShortDescription": "ChartExample description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
