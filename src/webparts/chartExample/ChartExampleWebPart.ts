@@ -10,12 +10,13 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'ChartExampleWebPartStrings';
 import ChartExample from './components/ChartExample';
-import { IChartExampleProps } from './components/IChartExampleProps';
-
+import { IChartExampleProps, IChartData } from './components/IChartExampleProps';
+import { faker } from '@faker-js/faker';
 
 export interface IChartExampleWebPartProps {
   description: string;
 }
+
 
 export default class ChartExampleWebPart extends BaseClientSideWebPart<IChartExampleWebPartProps> {
 
@@ -29,10 +30,30 @@ export default class ChartExampleWebPart extends BaseClientSideWebPart<IChartExa
   }
 
   public render(): void {
+    
+    const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+
+    const data: IChartData = {
+      labels,
+      datasets: [
+        {
+          label: 'Dataset 1',
+          data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        },
+        {
+          label: 'Dataset 2',
+          data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
+          backgroundColor: 'rgba(53, 162, 235, 0.5)',
+        },
+      ],
+    };  
+    
+    
     const element: React.ReactElement<IChartExampleProps> = React.createElement(
       ChartExample,
       {
-        description: this.properties.description,
+        chartData: data,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
